@@ -3,6 +3,7 @@ import numpy as np
 import os
 from datetime import datetime, timezone
 import pytz
+import joblib
 
 # data cleaning functions
 
@@ -45,7 +46,7 @@ def load_data(team_num):
     return df
 
 
-def train(df):
+def train():
     # run train.py file
     os.system("python train.py")
 
@@ -98,20 +99,61 @@ def get_matchup_to_predict(team1, team2):
     team1_stats = team1_stats[team1_stats["Date"] == now]
     team2_stats = team2_stats[team2_stats["Date"] == now]
 
+    # shorten opponent teamname for ranks join
+    team1_stats["opp_teamname"] = team1_stats["Opponent"].apply(lambda x: x.split(" ")[-1])
+    team2_stats["opp_teamname"] = team2_stats["Opponent"].apply(lambda x: x.split(" ")[-1])
+
     ranks = pd.read_csv("data/ranks.csv")
 
-    team1_stats = team1_stats.merge(
-        ranks, how="left", left_on="Date", right_on="Date")
+    # merge ranks
+    team1_stats = team1_stats.merge(ranks, how="left", left_on="opp_teamname", right_on="Teams")
+    team2_stats = team2_stats.merge(ranks, how="left", left_on="opp_teamname", right_on="Teams")
+
+    # home to binary
+    team1_stats["Home"] = team1_stats["Unnamed: 5"].apply(lambda x: home_to_binary(x))
+    team2_stats["Home"] = team2_stats["Unnamed: 5"].apply(lambda x: home_to_binary(x))
+
+    # choose final columns
+    team1_stats = team1_stats[["Rk", "Chg", "Home"]]
+    team2_stats = team2_stats[["Rk", "Chg", "Home"]]
 
 
-def predict(team_num, df):
+    return team1_stats, team2_stats
+
+
+def predict(team1_stats, team2_stats):
     # load model
-    model = joblib.load(f"models/team{team_num}_model.pkl")
+    model1 = joblib.load("models/team1_model.pkl")
+    model2 = joblib.load("models/team2_model.pkl")
 
     # get predictions
-    predictions = model.predict(df)
+    predictions1 = model1.predict(team1_stats)
+    predictions2 = model2.predict(team2_stats)
 
-    # get average prediction
-    avg_prediction = np.mean(predictions)
+    # sum both predictions for over/under
+    total = predictions1 + predictions2
 
-    return avg_prediction
+    return total
+
+
+def main():
+    team1 = "BOS"
+    team2 = "LAL"
+    # could try to load in above from matchup.txt
+    # matchup.txt will be sent from streamlit app
+    # first, run pull_matchup_data.py and then train.py
+    # then, this file
+
+
+    # get matchup to predict
+    team1_stats, team2_stats = get_matchup_to_predict(team1, team2)
+
+    # get predictions
+    total = predict(team1_stats, team2_stats)
+
+    # print results
+    print(f"Predicted score: {total[0]}")
+
+# if name is main, run main
+if __name__ == "__main__":
+    main()
