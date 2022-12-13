@@ -1,0 +1,6 @@
+streamlit
+scikit-learn
+lxml
+pytest
+pylint
+black

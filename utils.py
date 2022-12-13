@@ -39,6 +39,7 @@ def get_date(date):
     temp = str(temp)[:-9]
     return temp
 
+
 # load data, predict, and return results
 
 
@@ -63,15 +64,15 @@ def get_matchup_to_predict(team1, team2):
     # would rather keep everything consistent in one function than exporting/importing it
     # elsewhere and having to deal with issues later
     team1_stats = pd.read_html(
-        f"https://www.basketball-reference.com/teams/{team1}/2023_games.html")[0]
+        f"https://www.basketball-reference.com/teams/{team1}/2023_games.html"
+    )[0]
     team2_stats = pd.read_html(
-        f"https://www.basketball-reference.com/teams/{team2}/2023_games.html")[0]
+        f"https://www.basketball-reference.com/teams/{team2}/2023_games.html"
+    )[0]
 
     # use get date
-    team1_stats["Date"] = team1_stats.apply(
-        lambda x: get_date(x["Date"]), axis=1)
-    team2_stats["Date"] = team2_stats.apply(
-        lambda x: get_date(x["Date"]), axis=1)
+    team1_stats["Date"] = team1_stats.apply(lambda x: get_date(x["Date"]), axis=1)
+    team2_stats["Date"] = team2_stats.apply(lambda x: get_date(x["Date"]), axis=1)
 
     team1_stats["Date"] = pd.to_datetime(team1_stats["Date"])
     team2_stats["Date"] = pd.to_datetime(team2_stats["Date"])
@@ -81,34 +82,38 @@ def get_matchup_to_predict(team1, team2):
     team2_stats.dropna(subset=["Date"], inplace=True)
 
     # apply utc to both
-    team1_stats["Date"] = team1_stats.apply(
-        lambda x: utc_to_local(x["Date"]), axis=1)
-    team2_stats["Date"] = team2_stats.apply(
-        lambda x: utc_to_local(x["Date"]), axis=1)
+    team1_stats["Date"] = team1_stats.apply(lambda x: utc_to_local(x["Date"]), axis=1)
+    team2_stats["Date"] = team2_stats.apply(lambda x: utc_to_local(x["Date"]), axis=1)
 
-    est = pytz.timezone('US/Eastern')
+    est = pytz.timezone("US/Eastern")
 
     # localize each date to est
-    team1_stats["Date"] = team1_stats.apply(
-        lambda x: est.localize(x["Date"]), axis=1)
-    team2_stats["Date"] = team2_stats.apply(
-        lambda x: est.localize(x["Date"]), axis=1)
+    team1_stats["Date"] = team1_stats.apply(lambda x: est.localize(x["Date"]), axis=1)
+    team2_stats["Date"] = team2_stats.apply(lambda x: est.localize(x["Date"]), axis=1)
 
-    timezone = pytz.timezone('US/Eastern')
+    timezone = pytz.timezone("US/Eastern")
     now = datetime.now(tz=timezone)
     now = now.strftime("%Y %m %d")
     team1_stats = team1_stats[team1_stats["Date"] == now]
     team2_stats = team2_stats[team2_stats["Date"] == now]
 
     # shorten opponent teamname for ranks join
-    team1_stats["opp_teamname"] = team1_stats["Opponent"].apply(lambda x: x.split(" ")[-1])
-    team2_stats["opp_teamname"] = team2_stats["Opponent"].apply(lambda x: x.split(" ")[-1])
+    team1_stats["opp_teamname"] = team1_stats["Opponent"].apply(
+        lambda x: x.split(" ")[-1]
+    )
+    team2_stats["opp_teamname"] = team2_stats["Opponent"].apply(
+        lambda x: x.split(" ")[-1]
+    )
 
     ranks = pd.read_csv("data/ranks.csv")
 
     # merge ranks
-    team1_stats = team1_stats.merge(ranks, how="left", left_on="opp_teamname", right_on="Teams")
-    team2_stats = team2_stats.merge(ranks, how="left", left_on="opp_teamname", right_on="Teams")
+    team1_stats = team1_stats.merge(
+        ranks, how="left", left_on="opp_teamname", right_on="Teams"
+    )
+    team2_stats = team2_stats.merge(
+        ranks, how="left", left_on="opp_teamname", right_on="Teams"
+    )
 
     # home to binary
     team1_stats["Home"] = team1_stats["Unnamed: 5"].apply(lambda x: home_to_binary(x))
@@ -117,7 +122,6 @@ def get_matchup_to_predict(team1, team2):
     # choose final columns
     team1_stats = team1_stats[["Rk", "Chg", "Home"]]
     team2_stats = team2_stats[["Rk", "Chg", "Home"]]
-
 
     return team1_stats, team2_stats
 

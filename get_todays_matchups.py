@@ -17,57 +17,62 @@ def split_team_name(team_and_date_long_string):
     """Splits up the messy "tomorrow" column from our scraped Draft Kings Data.
     Returns time, team abbreviation, and team name."""
 
-
     # find date - should be any characters ending with AM or PM
     # NOTE: game times appear to be 5 hours ahead of EST
     # not an issue unless we choose to implement this as a feature
-    time = re.search(r'(.+)(AM|PM)', team_and_date_long_string)
+    time = re.search(r"(.+)(AM|PM)", team_and_date_long_string)
     if not time:
         # if game is in progress, ignore
         return None, None, None
-    
+
     time = time[0]
     # find team name - all characters after the date
-    team = re.search(r'(.+)(AM|PM)(.+)', team_and_date_long_string)[3]
+    team = re.search(r"(.+)(AM|PM)(.+)", team_and_date_long_string)[3]
 
     # split abbreviation and team name
-    team_abbrev = team.split(' ')[0]
-    team_full = team.split(' ')[1]
+    team_abbrev = team.split(" ")[0]
+    team_full = team.split(" ")[1]
 
     return time, team_abbrev, team_full
 
-df[["time", "team_abbrev", "team_full"]] = df.apply(lambda x: split_team_name(x["Today"]), axis=1, result_type="expand")
+
+df[["time", "team_abbrev", "team_full"]] = df.apply(
+    lambda x: split_team_name(x["Today"]), axis=1, result_type="expand"
+)
 df.dropna(inplace=True)
 
 
 # convert team abbrev to 3 letters if its not
 
+
 def expand_abbrev(abbrev, name):
     if name == "Lakers":
-        return 'LAL'
+        return "LAL"
     if name == "Knicks":
-        return 'NYK'
+        return "NYK"
     if name == "Clippers":
-        return 'LAC'
+        return "LAC"
     if name == "Spurs":
-        return 'SAS'
-    if name ==  "Nets":
-        return 'BRK'
+        return "SAS"
+    if name == "Nets":
+        return "BRK"
     if name == "Hawks":
-        return 'ATL'
+        return "ATL"
     if name == "Hornets":
-        return 'CHO'
+        return "CHO"
     if name == "Pelicans":
-        return 'NOP'
+        return "NOP"
     if name == "Suns":
-        return 'PHO'
+        return "PHO"
     if name == "Warriors":
-        return 'GSW'
+        return "GSW"
     else:
         return abbrev
 
-df["team_abbrev"] = df.apply(lambda x: expand_abbrev(x["team_abbrev"], x["team_full"]), axis=1)
 
+df["team_abbrev"] = df.apply(
+    lambda x: expand_abbrev(x["team_abbrev"], x["team_full"]), axis=1
+)
 
 
 # for example, the first matchup is team abbrev at index 0 and 1
@@ -78,8 +83,9 @@ def find_matchups(df):
     Returns a list of tuples with the team abbreviations for each matchup."""
     matchups = []
     for i in range(0, len(df), 2):
-        matchups.append((df.iloc[i]["team_abbrev"], df.iloc[i+1]["team_abbrev"]))
+        matchups.append((df.iloc[i]["team_abbrev"], df.iloc[i + 1]["team_abbrev"]))
     return matchups
+
 
 matchups = find_matchups(df)
 

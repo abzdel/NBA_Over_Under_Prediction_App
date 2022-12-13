@@ -1,4 +1,4 @@
-#imports
+# imports
 import pandas as pd
 import joblib
 from sklearn.linear_model import LinearRegression
@@ -15,21 +15,25 @@ features = ["Rk", "Chg", "Home"]
 X = team1_stats[features]
 y = team1_stats["Tm"]
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 
 model = LinearRegression()
 model.fit(X, y)
 
-joblib.dump(model, 'models/team1_model.pkl')
+joblib.dump(model, "models/team1_model.pkl")
 print("Team 1 model trained and saved.")
 
 # train and export team 2 model
 X = team2_stats[features]
 y = team2_stats["Tm"]
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 
 model = LinearRegression()
 model.fit(X, y)
-joblib.dump(model, 'models/team2_model.pkl')
+joblib.dump(model, "models/team2_model.pkl")
 print("Team 2 model trained and saved.")
