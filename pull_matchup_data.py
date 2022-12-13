@@ -4,14 +4,13 @@ from utils import *
 
 
 matchup = pd.read_csv("matchup.txt", header=None)
-matchup = str(matchup[0].values[0])
+#matchup = str(matchup[0].values[0])
 print(f"matchup is: {matchup}")
 
 
 # split matchup into team1 and team2
-team1 = matchup.split(" ")[0]
-team2 = matchup.split(" ")[-1]
-
+team1 = matchup.loc[1][0].split(" ")[0]
+team2 = matchup.loc[1][0].split(" ")[-1]
 
 # scrape from basketball reference for both teams
 team1_stats = pd.read_html(f"https://www.basketball-reference.com/teams/{team1}/2023_games.html")

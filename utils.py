@@ -4,6 +4,7 @@ import os
 from datetime import datetime, timezone
 import pytz
 import joblib
+import streamlit as st
 
 # data cleaning functions
 
@@ -131,29 +132,39 @@ def predict(team1_stats, team2_stats):
     predictions2 = model2.predict(team2_stats)
 
     # sum both predictions for over/under
-    total = predictions1 + predictions2
+    total = int(predictions1 + predictions2)
+
+    if total:
+        st.success(f"predicted score: {total}:checkered_flag:")
 
     return total
 
 
-def main():
-    team1 = "BOS"
-    team2 = "LAL"
-    # could try to load in above from matchup.txt
-    # matchup.txt will be sent from streamlit app
-    # first, run pull_matchup_data.py and then train.py
-    # then, this file
+def main(matchup):
 
+    pd.Series(matchup).to_csv("matchup.txt", index=False)
+
+    matchup = pd.read_csv("matchup.txt", header=None)
+    # split matchup into team1 and team2
+    team1 = matchup.loc[1][0].split(" ")[0]
+    team2 = matchup.loc[1][0].split(" ")[-1]
+
+    # call pull matchup data file
+    os.system("python pull_matchup_data.py")
+
+    # train model
+    train()
 
     # get matchup to predict
+    print(team1, team2)
     team1_stats, team2_stats = get_matchup_to_predict(team1, team2)
 
     # get predictions
     total = predict(team1_stats, team2_stats)
-
+    total = int(total)
     # print results
-    print(f"Predicted score: {total[0]}")
+    print(f"Predicted score: {total}")
 
-# if name is main, run main
+
 if __name__ == "__main__":
     main()
