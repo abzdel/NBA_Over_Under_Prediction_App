@@ -1,3 +1,5 @@
+[![Makefile CI](https://github.com/abzdel/NBA_Over_Under_Prediction_App/actions/workflows/makefile.yml/badge.svg)](https://github.com/abzdel/NBA_Over_Under_Prediction_App/actions/workflows/makefile.yml)
+
 # Description
 This repository contains an NBA over/under prediction app built with Python and Streamlit. It uses a linear regression model to make predictions on the over/under bets for NBA games. The user simply chooses which game they'd like predictions on, and the app automatically scrapes new data about the team, makes predictions, and returns the predicted total score for the user.
 
