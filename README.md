@@ -4,7 +4,7 @@
 This repository contains an NBA over/under prediction app built with Python and Streamlit. It uses a linear regression model to make predictions on the over/under bets for NBA games. The user simply chooses which game they'd like predictions on, and the app automatically scrapes new data about the team, makes predictions, and returns the predicted total score for the user.
 
 # Project Architecture
-![final_architecture drawio](https://user-images.githubusercontent.com/55398496/207455461-2d64f5c7-2436-4a6c-89cc-37d364f36e86.png)
+![final_architecture drawio](https://user-images.githubusercontent.com/55398496/207462993-51db9219-bf31-4d77-922f-ae36cd092ced.png)
 
 
 # How Does the Code Work?
