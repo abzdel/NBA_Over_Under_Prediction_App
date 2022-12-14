@@ -17,7 +17,7 @@ As can be seen above, our main() function calls various other python files and f
   This won't be much use if it's not completely up to date
 3) Returning predictions to the app
 <br>
-You may also notice that there are two places this can be pushed - to our App Runner instance, or to our local app. I don't plan to leave this running on a deployment service like App Runner, so the following tutorial will deal with running this for yourself locally!
+You may also notice that there are two places this can be pushed - to our EC2 instance, or to our local app. I don't plan to leave this running on a deployment service like App Runner, so the following tutorial will deal with running this for yourself locally!
 
 # How to Run the App
 
