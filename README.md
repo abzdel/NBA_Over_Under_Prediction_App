@@ -9,7 +9,7 @@ This repository contains an NBA over/under prediction app built with Python and 
 
 # How Does the Code Work?
 Here's a secondary diagram, showing what's happening when a team is selected from the dropdown in our app:
-![project4 drawio](https://user-images.githubusercontent.com/55398496/207473993-19bd5bc9-7676-49c2-b258-d20a51183e80.png)
+![final_code_diagram drawio](https://user-images.githubusercontent.com/55398496/207474113-96efe05e-0a53-47d5-9e3a-22df7743bfba.png)
 
 
 As can be seen above, our main() function calls various other python files and functions to perform a variety of tasks. These include:
